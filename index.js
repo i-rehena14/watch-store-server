@@ -23,6 +23,27 @@ async function run() {
         // console.log('watchStore database connected successfully');
         const database = client.db('watchTime');
         const productsCollection = database.collection('products');
+        const ordersCollection = database.collection('orders');
+        const usersCollection = database.collection('users');
+
+        //POST user
+        app.post("/users", async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            console.log(result);
+            res.json(result);
+        });
+
+        //PUT admin
+        app.put("/users/admin", async (req, res) => {
+            const user = req.body;
+            console.log('put', user);
+            const filter = { email: user.email };
+            const update = { $set: { role: "admin" } };
+            const result = await usersCollection.updateOne(filter, update);
+            res.json(result);
+            // console.log(result);
+        })
 
         //POST Add product
         app.post("/addProduct", async (req, res) => {
@@ -36,7 +57,7 @@ async function run() {
         app.get("/allProducts", async (req, res) => {
             const result = await productsCollection.find({}).toArray();
             res.send(result);
-            console.log(result);
+            // console.log(result);
         });
 
         //GET single product
@@ -44,6 +65,53 @@ async function run() {
             const result = await productsCollection.find({ _id: ObjectId(req.params.id) }).toArray();
             // console.log(result[0]);
             res.send(result[0]);
+        });
+
+        //POST place order
+        app.post("/placeOrder", async (req, res) => {
+            const result = await ordersCollection.insertOne(req.body);
+            // console.log(result);
+            res.send(result);
+        });
+
+        //GET my orders
+        app.get("/myOrders/:email", async (req, res) => {
+            const result = await ordersCollection.find({ email: req.params.email }).toArray();
+            // console.log("orders", result);
+            res.send(result);
+        });
+
+        //GET allOrders
+        app.get('/allOrders', async (req, res) => {
+            const cursor = ordersCollection.find({});
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        //DELETE my order
+        app.delete("/cancelOrder/:id", async (req, res) => {
+            const result = await ordersCollection.deleteOne({ _id: ObjectId(req.params.id) });
+            // console.log(result);
+            res.send(result);
+        });
+
+        //DELETE manageOrders
+        app.delete("/deleteOrder", async (req, res) => {
+            const result = await ordersCollection.deleteOne({ _id: ObjectId(req.params.id), email: req.params.email });
+            console.log("dele", result);
+            // res.send(result);
+        });
+
+        //UPDATE status
+        app.put("/updateStatus/:id", async (req, res) => {
+            const id = req.params.id;
+            const updatedStatus = req.body.status;
+            const filter = { _id: ObjectId(id) };
+            // console.log(updatedStatus);
+            const result = await ordersCollection.updateOne(filter, {
+                $set: { status: updatedStatus },
+            });
+            console.log(result);
         });
 
     }
