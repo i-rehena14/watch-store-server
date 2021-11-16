@@ -25,6 +25,7 @@ async function run() {
         const productsCollection = database.collection('products');
         const ordersCollection = database.collection('orders');
         const usersCollection = database.collection('users');
+        const reviewsCollection = database.collection('reviews');
 
         //POST user
         app.post("/users", async (req, res) => {
@@ -53,9 +54,24 @@ async function run() {
             res.send(result);
         });
 
+        //POST Add review
+        app.post("/addReview", async (req, res) => {
+            // console.log(req.body);
+            const result = await reviewsCollection.insertOne(req.body);
+            console.log(result);
+            res.send(result);
+        });
+
         // GET all products
         app.get("/allProducts", async (req, res) => {
             const result = await productsCollection.find({}).toArray();
+            res.send(result);
+            // console.log(result);
+        });
+
+        // GET reviews
+        app.get("/reviews", async (req, res) => {
+            const result = await reviewsCollection.find({}).toArray();
             res.send(result);
             // console.log(result);
         });
@@ -95,7 +111,14 @@ async function run() {
             res.send(result);
         });
 
-        //DELETE manageOrders
+        //DELETE product
+        app.delete("/deleteProduct/:id", async (req, res) => {
+            const result = await productsCollection.deleteOne({ _id: ObjectId(req.params.id) });
+            // console.log(result);
+            res.send(result);
+        });
+
+        //DELETE manageAllOrders
         app.delete("/deleteOrder", async (req, res) => {
             const result = await ordersCollection.deleteOne({ _id: ObjectId(req.params.id), email: req.params.email });
             console.log("dele", result);
@@ -113,6 +136,18 @@ async function run() {
             });
             console.log(result);
         });
+
+        //GET make admin
+        app.get("/users/:email", async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            let isAdmin = false;
+            if (user?.role === 'admin') {
+                isAdmin = true;
+            }
+            res.send({ admin: isAdmin });
+        })
 
     }
     finally {
