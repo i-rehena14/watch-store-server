@@ -31,14 +31,14 @@ async function run() {
         app.post("/users", async (req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user);
-            console.log(result);
+            // console.log(result);
             res.json(result);
         });
 
         //PUT admin
         app.put("/users/admin", async (req, res) => {
             const user = req.body;
-            console.log('put', user);
+            // console.log('put', user);
             const filter = { email: user.email };
             const update = { $set: { role: "admin" } };
             const result = await usersCollection.updateOne(filter, update);
@@ -58,7 +58,7 @@ async function run() {
         app.post("/addReview", async (req, res) => {
             // console.log(req.body);
             const result = await reviewsCollection.insertOne(req.body);
-            console.log(result);
+            // console.log(result);
             res.send(result);
         });
 
@@ -104,26 +104,28 @@ async function run() {
             res.send(result);
         });
 
-        //DELETE my order
+        //DELETE order from my order
         app.delete("/cancelOrder/:id", async (req, res) => {
             const result = await ordersCollection.deleteOne({ _id: ObjectId(req.params.id) });
             // console.log(result);
             res.send(result);
         });
 
-        //DELETE product
+        //DELETE order in manageAllOrders
+        app.delete("/deleteOrder/:id", async (req, res) => {
+            const result = await ordersCollection.deleteOne({ _id: ObjectId(req.params.id) });
+            // console.log(result);
+            res.send(result);
+        });
+
+        //DELETE a product
         app.delete("/deleteProduct/:id", async (req, res) => {
             const result = await productsCollection.deleteOne({ _id: ObjectId(req.params.id) });
             // console.log(result);
             res.send(result);
         });
 
-        //DELETE manageAllOrders
-        app.delete("/deleteOrder", async (req, res) => {
-            const result = await ordersCollection.deleteOne({ _id: ObjectId(req.params.id), email: req.params.email });
-            console.log("dele", result);
-            // res.send(result);
-        });
+
 
         //UPDATE status
         app.put("/updateStatus/:id", async (req, res) => {
@@ -134,7 +136,7 @@ async function run() {
             const result = await ordersCollection.updateOne(filter, {
                 $set: { status: updatedStatus },
             });
-            console.log(result);
+            // console.log(result);
         });
 
         //GET make admin
