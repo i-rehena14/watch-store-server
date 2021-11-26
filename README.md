@@ -4,7 +4,7 @@ This is the server for the watch selling website which is a full-stack website m
 
 Heroku Server Link: https://nameless-depths-17324.herokuapp.com/
 
-Live Site link: https://watch-store-aa204.web.app/
+Live Website link: https://watch-store-aa204.web.app/
 
 
 ## About the Project server
